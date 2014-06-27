@@ -10,20 +10,26 @@ var time = 0;
 var timeSec = 0;
 var tileAni = 0;
 var gameState = 0; //0 = title screen 1 = game 2 = game over
-var title = "Bee and Flower BETA v1.3" //title
+var title = "Bee and Flower BETA v1.4" //title
+var PlayerSprite = 0; //0 = up, 1 = down 2 = left 3 = right
+var debug = false;
 var b; //temp cookie read var
 
-console.log(title+" | width: "+width+" | height: "+height+" | Please don`t try to cheat");
+console.log(title+" | width: "+width+" | height: "+height+" | Please don`t try to cheat with Console");
+console.log("Q / E toggle hit boxes")
 
 //entities
-var player = new entity("img/entity_player_up.png", width / 2, 10, 32, 43, 3);
+var player = new entity("img/Player/down_still.png", width / 2, 10, 32, 32, 3);
 var flower = new entity("img/entity_flower.png", Math.random() * width - 20, Math.random() * height - 20, 32, 32, 0);
 
-//load the sprites
-player.Sprite.src = "img/entity_player_up.png";
-player.Sprite.src = "img/entity_player_down.png";
-player.Sprite.src = "img/entity_player_left.png";
-player.Sprite.src = "img/entity_player_right.png";
+//hit box image red (entity)
+var box32 = new Image(); 
+box32.src = "img/box32.png";
+
+//hit box image groen (player)
+var box32_player = new Image();
+box32_player.src = "img/Player/box32_player.png";
+
 
 var bgTitle = new obj("img/bgTitle.png",0,0,0,0); //gs 0
 var bgGame = new obj("img/grass.png",0,0,0,0); //gs 1
@@ -31,7 +37,7 @@ var bgGameOver = new obj("img/bgGameOver.png",0,0,0,0); //gs 2
 
 var norBees = new Array();
 for (var i = 0; i < 3; i++) {
-	norBees[i] = new entity("img/entity_bee.png", 0, 0, 32, 32, 1);
+	norBees[i] = new entity("img/entity_bee2.png", 0, 0, 32, 32, 1);
 }
 
 //events
@@ -62,7 +68,10 @@ window.addEventListener("keyup" , function(e) {
 up = 38
 down = 40
 left = 37
-right = 39 
+right = 39
+
+q = 81
+e = 69
 */
 
 function game() {
@@ -73,17 +82,43 @@ function game() {
 
 function update() {
 
-	//player input movemend
-	if (keys[38] || keys[87]) player.y-=player.speed;
-	if (keys[40] || keys[83]) player.y+=player.speed;
-	if (keys[37] || keys[65]) player.x-=player.speed;
-	if (keys[39] || keys[68]) player.x+=player.speed;
+	//debug key
+	if(keys[81]) debug = true;
+	if(keys[69]) debug = false;
 
-	//player sprites
-	if (keys[38] || keys[87]) player.Sprite.src = "img/entity_player_up.png";
-	if (keys[40] || keys[83]) player.Sprite.src = "img/entity_player_down.png";
-	if (keys[37] || keys[65]) player.Sprite.src = "img/entity_player_left.png";
-	if (keys[39] || keys[68]) player.Sprite.src = "img/entity_player_right.png";
+	//player input control
+	if (keys[38] || keys[87]) { //up key
+		player.y-=player.speed;
+		if(time > 30) player.Sprite.src = "img/Player/up_walkA.png";
+		if(time < 30) player.Sprite.src = "img/Player/up_walkB.png";
+		PlayerSprite = 0;
+	} else if(PlayerSprite == 0) {
+		player.Sprite.src = "img/Player/up_still.png";
+	}
+	if (keys[40] || keys[83]) { //down key
+		player.y+=player.speed;
+		if(time > 30) player.Sprite.src = "img/Player/down_walkA.png";
+		if(time < 30) player.Sprite.src = "img/Player/down_walkB.png";
+		PlayerSprite = 1;
+	} else if(PlayerSprite == 1) {
+		player.Sprite.src = "img/Player/down_still.png";
+	}
+	if (keys[37] || keys[65]) { //left key
+		player.x-=player.speed;
+		if(time > 30) player.Sprite.src = "img/Player/left_walkA.png";
+		if(time < 30) player.Sprite.src = "img/Player/left_walkB.png";
+		PlayerSprite = 2;
+	} else if(PlayerSprite == 2) {
+		player.Sprite.src = "img/Player/left_still.png";
+	}
+	if (keys[39] || keys[68]) { //right key
+		player.x+=player.speed;
+		if(time > 30) player.Sprite.src = "img/Player/right_walkA.png";
+		if(time < 30) player.Sprite.src = "img/Player/right_walkB.png";
+		PlayerSprite = 3;
+	} else if(PlayerSprite == 3) {
+		player.Sprite.src = "img/Player/right_still.png";
+	}
 
 
 	//bee 0 movemend
@@ -161,6 +196,12 @@ function render() {
 	}
 
 	if (gameState == 1) {
+	
+		if(debug) {
+			context.drawImage(box32_player, player.x, player.y);
+			context.drawImage(box32, flower.x, flower.y);
+		}
+	
 	//draw player
 	context.drawImage(player.Sprite, player.x, player.y);
 
@@ -170,6 +211,7 @@ function render() {
 	//draw bee
 	for (var i = 0; i < norBees.length; i++) {
 		context.drawImage(norBees[i].Sprite, norBees[i].x, norBees[i].y);
+		if(debug) context.drawImage(box32, norBees[i].x, norBees[i].y);
 	}
 
 	//draw text
