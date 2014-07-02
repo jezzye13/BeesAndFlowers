@@ -1,20 +1,25 @@
 var canvas = document.getElementById("mainCanvas");
 var context = canvas.getContext("2d");
 
-var keys = [];
+var keys = []; //array of keys booleans
 
-var width = canvas.width;
-var height = canvas.height;
+var width = canvas.width; //width int
+var height = canvas.height; //height int
 var score = 0;
 var time = 0;
 var timeSec = 0;
 var tileAni = 0;
 var gameState = 0; //0 = title screen 1 = game 2 = game over
-var title = "Bee and Flower BETA v1.4" //title
+var title = "Bee and Flower BETA v1.5" //title
 var PlayerSprite = 0; //0 = up, 1 = down 2 = left 3 = right
-var debug = false;
+var debug = false; //debug mode boolean
 var b; //temp cookie read var
 
+var fps = 0, now, lastUpdate = (new Date)*1; //fps counter vars
+var fpsFilter = 50;
+var fpsFix = 0;
+
+//welcome message
 console.log(title+" | width: "+width+" | height: "+height+" | Please don`t try to cheat with Console");
 console.log("Q / E toggle hit boxes")
 
@@ -30,11 +35,12 @@ box32.src = "img/box32.png";
 var box32_player = new Image();
 box32_player.src = "img/Player/box32_player.png";
 
-
+//gameStates
 var bgTitle = new obj("img/bgTitle.png",0,0,0,0); //gs 0
 var bgGame = new obj("img/grass.png",0,0,0,0); //gs 1
 var bgGameOver = new obj("img/bgGameOver.png",0,0,0,0); //gs 2
 
+//bee
 var norBees = new Array();
 for (var i = 0; i < 3; i++) {
 	norBees[i] = new entity("img/entity_bee2.png", 0, 0, 32, 32, 1);
@@ -85,9 +91,33 @@ function update() {
 	//debug key
 	if(keys[81]) debug = true;
 	if(keys[69]) debug = false;
+	
+	if (keys[38] || keys[87]) {
+		var up = true;
+	} else {
+		up = false;
+	}
+	
+	if (keys[40] || keys[83]) {
+		var down = true;
+	} else {
+		down = false;
+	}
+	
+	if (keys[37] || keys[65]) {
+		var left = true;
+	} else {
+		left = false;
+	}
+	
+	if (keys[39] || keys[68]) {
+		var right = true;
+	} else {
+		right = false;
+	}
 
 	//player input control
-	if (keys[38] || keys[87]) { //up key
+	if (up && !(left || right)) { //up
 		player.y-=player.speed;
 		if(time > 30) player.Sprite.src = "img/Player/up_walkA.png";
 		if(time < 30) player.Sprite.src = "img/Player/up_walkB.png";
@@ -95,7 +125,7 @@ function update() {
 	} else if(PlayerSprite == 0) {
 		player.Sprite.src = "img/Player/up_still.png";
 	}
-	if (keys[40] || keys[83]) { //down key
+	if (down && !(left || right)) { //down
 		player.y+=player.speed;
 		if(time > 30) player.Sprite.src = "img/Player/down_walkA.png";
 		if(time < 30) player.Sprite.src = "img/Player/down_walkB.png";
@@ -103,7 +133,7 @@ function update() {
 	} else if(PlayerSprite == 1) {
 		player.Sprite.src = "img/Player/down_still.png";
 	}
-	if (keys[37] || keys[65]) { //left key
+	if (left && !(up || down)) { //left
 		player.x-=player.speed;
 		if(time > 30) player.Sprite.src = "img/Player/left_walkA.png";
 		if(time < 30) player.Sprite.src = "img/Player/left_walkB.png";
@@ -111,13 +141,50 @@ function update() {
 	} else if(PlayerSprite == 2) {
 		player.Sprite.src = "img/Player/left_still.png";
 	}
-	if (keys[39] || keys[68]) { //right key
+	if (right && !(up || down)) { //right
 		player.x+=player.speed;
 		if(time > 30) player.Sprite.src = "img/Player/right_walkA.png";
 		if(time < 30) player.Sprite.src = "img/Player/right_walkB.png";
 		PlayerSprite = 3;
 	} else if(PlayerSprite == 3) {
 		player.Sprite.src = "img/Player/right_still.png";
+	}
+	
+	if (down && left) { //down left
+		player.y+=player.speed;
+		player.x-=player.speed;
+		if(time > 30) player.Sprite.src = "img/Player/down_left_walkA.png";
+		if(time < 30) player.Sprite.src = "img/Player/down_left_walkB.png";
+		PlayerSprite = 4;
+	} else if(PlayerSprite == 4) {
+		player.Sprite.src = "img/Player/down_left_still.png";
+	}
+	if (down && right) { //down right
+		player.y+=player.speed;
+		player.x+=player.speed;
+		if(time > 30) player.Sprite.src = "img/Player/down_right_walkA.png";
+		if(time < 30) player.Sprite.src = "img/Player/down_right_walkB.png";
+		PlayerSprite = 5;
+	} else if(PlayerSprite == 5) {
+		player.Sprite.src = "img/Player/down_right_still.png";
+	}
+	if (up && left) { //up left
+		player.y-=player.speed;
+		player.x-=player.speed;
+		if(time > 30) player.Sprite.src = "img/Player/up_left_walkA.png";
+		if(time < 30) player.Sprite.src = "img/Player/up_left_walkB.png";
+		PlayerSprite = 6;
+	} else if(PlayerSprite == 6) {
+		player.Sprite.src = "img/Player/up_left_still.png";
+	}
+	if (up && right) { //up right
+		player.y-=player.speed;
+		player.x+=player.speed;
+		if(time > 30) player.Sprite.src = "img/Player/up_right_walkA.png";
+		if(time < 30) player.Sprite.src = "img/Player/up_right_walkB.png";
+		PlayerSprite = 7;
+	} else if(PlayerSprite == 7) {
+		player.Sprite.src = "img/Player/up_right_still.png";
 	}
 
 
@@ -183,6 +250,8 @@ function update() {
 
 }
 
+
+
 function render() {
 
 	//clear screen
@@ -194,7 +263,7 @@ function render() {
 			context.drawImage(bgGame.Sprite, bx, by);
 		}
 	}
-
+	
 	if (gameState == 1) {
 	
 		if(debug) {
@@ -250,8 +319,7 @@ function render() {
 			}
 		}
 
-
-	} else if (gameState == 0) {
+	} else if  (gameState == 0) {
 		tileAni++;
 		if (tileAni >= 255) tileAni = 0;
 
@@ -268,13 +336,21 @@ function render() {
 		centerText(context, "Click on the screen!", height / 2);
 		context.fillStyle = "rgb(0,0,0)";
 		context.fillText("YourTopScore: " + top, 10, height / 12);
-		
-
-	} else {
-
+	
 	}
-
+	
+	var thisFrameFPS = 1000 / ((now=new Date) - lastUpdate);
+	if (now!=lastUpdate){
+		fps += (thisFrameFPS - fps) / fpsFilter;
+		lastUpdate = now;
+	}
+	
+	if (debug) {
+		context.font = "bold 12px helvetica";
+		context.fillText("  Fps " + fpsFix.toFixed(1), 0, 400);
+	}
 }
+
 //centers text
 function centerText(ctx, text, y) {
 	var measurement = ctx.measureText(text);
@@ -325,7 +401,10 @@ setInterval(function() {
 }, 1000/60); //60 fps
 setInterval(function() {
 	render();
-}, 1000/60); //60 fps
+}, 1); //render loop
+setInterval(function() {
+	fpsFix = fps;
+}, 1000); //render loop
 setInterval(function() {
 	update();
 }, 1000/60); //60 fps
