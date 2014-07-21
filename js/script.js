@@ -21,7 +21,7 @@ var fpsFix = 0;
 
 //welcome message
 console.log(title+" | width: "+width+" | height: "+height+" | Please don`t try to cheat with Console");
-console.log("Q / E toggle hit boxes")
+console.log("Q / E toggle hit boxes");
 
 //entities
 var player = new entity("img/Player/down_still.png", width / 2, 10, 32, 32, 3);
@@ -116,35 +116,47 @@ function update() {
 		right = false;
 	}
 
+	//loop
+	//A
+	//Still
+	//B
+	
+	
+	//0-20 = a 20 - 40 = still 40 - 60 = b
+	
 	//player input control
 	if (up && !(left || right)) { //up
 		player.y-=player.speed;
-		if(time > 30) player.Sprite.src = "img/Player/up_walkA.png";
-		if(time < 30) player.Sprite.src = "img/Player/up_walkB.png";
+		if(time < 20) player.Sprite.src = "img/Player/up_walkA.png";
+		if(time > 20 && time < 40) player.Sprite.src = "img/Player/up_still.png";
+		if(time > 40) player.Sprite.src = "img/Player/up_walkB.png";
 		PlayerSprite = 0;
 	} else if(PlayerSprite == 0) {
 		player.Sprite.src = "img/Player/up_still.png";
 	}
 	if (down && !(left || right)) { //down
 		player.y+=player.speed;
-		if(time > 30) player.Sprite.src = "img/Player/down_walkA.png";
-		if(time < 30) player.Sprite.src = "img/Player/down_walkB.png";
+		if(time < 20) player.Sprite.src = "img/Player/down_walkA.png";
+		if(time > 20 && time < 40) player.Sprite.src = "img/Player/down_still.png";
+		if(time > 40) player.Sprite.src = "img/Player/down_walkB.png";
 		PlayerSprite = 1;
 	} else if(PlayerSprite == 1) {
 		player.Sprite.src = "img/Player/down_still.png";
 	}
 	if (left && !(up || down)) { //left
 		player.x-=player.speed;
-		if(time > 30) player.Sprite.src = "img/Player/left_walkA.png";
-		if(time < 30) player.Sprite.src = "img/Player/left_walkB.png";
+		if(time < 20) player.Sprite.src = "img/Player/left_walkA.png";
+		if(time > 20 && time < 40) player.Sprite.src = "img/Player/left_still.png";
+		if(time > 40) player.Sprite.src = "img/Player/left_walkB.png";
 		PlayerSprite = 2;
 	} else if(PlayerSprite == 2) {
 		player.Sprite.src = "img/Player/left_still.png";
 	}
 	if (right && !(up || down)) { //right
 		player.x+=player.speed;
-		if(time > 30) player.Sprite.src = "img/Player/right_walkA.png";
-		if(time < 30) player.Sprite.src = "img/Player/right_walkB.png";
+		if(time < 20) player.Sprite.src = "img/Player/right_walkA.png";
+		if(time > 20 && time < 40) player.Sprite.src = "img/Player/right_still.png";
+		if(time > 40) player.Sprite.src = "img/Player/right_walkB.png";
 		PlayerSprite = 3;
 	} else if(PlayerSprite == 3) {
 		player.Sprite.src = "img/Player/right_still.png";
@@ -153,8 +165,9 @@ function update() {
 	if (down && left) { //down left
 		player.y+=player.speed;
 		player.x-=player.speed;
-		if(time > 30) player.Sprite.src = "img/Player/down_left_walkA.png";
-		if(time < 30) player.Sprite.src = "img/Player/down_left_walkB.png";
+		if(time < 20) player.Sprite.src = "img/Player/down_left_walkA.png";
+		if(time > 20 && time < 40) player.Sprite.src = "img/Player/down_left_still.png";
+		if(time > 40) player.Sprite.src = "img/Player/down_left_walkB.png";
 		PlayerSprite = 4;
 	} else if(PlayerSprite == 4) {
 		player.Sprite.src = "img/Player/down_left_still.png";
@@ -162,8 +175,9 @@ function update() {
 	if (down && right) { //down right
 		player.y+=player.speed;
 		player.x+=player.speed;
-		if(time > 30) player.Sprite.src = "img/Player/down_right_walkA.png";
-		if(time < 30) player.Sprite.src = "img/Player/down_right_walkB.png";
+		if(time < 20) player.Sprite.src = "img/Player/down_right_walkA.png";
+		if(time > 20 && time < 40) player.Sprite.src = "img/Player/down_right_still.png";
+		if(time > 40) player.Sprite.src = "img/Player/down_right_walkB.png";
 		PlayerSprite = 5;
 	} else if(PlayerSprite == 5) {
 		player.Sprite.src = "img/Player/down_right_still.png";
@@ -171,8 +185,9 @@ function update() {
 	if (up && left) { //up left
 		player.y-=player.speed;
 		player.x-=player.speed;
-		if(time > 30) player.Sprite.src = "img/Player/up_left_walkA.png";
-		if(time < 30) player.Sprite.src = "img/Player/up_left_walkB.png";
+		if(time < 20) player.Sprite.src = "img/Player/up_left_walkA.png";
+		if(time > 20 && time < 40) player.Sprite.src = "img/Player/up_left_still.png";
+		if(time > 40) player.Sprite.src = "img/Player/up_left_walkB.png";
 		PlayerSprite = 6;
 	} else if(PlayerSprite == 6) {
 		player.Sprite.src = "img/Player/up_left_still.png";
@@ -180,8 +195,9 @@ function update() {
 	if (up && right) { //up right
 		player.y-=player.speed;
 		player.x+=player.speed;
-		if(time > 30) player.Sprite.src = "img/Player/up_right_walkA.png";
-		if(time < 30) player.Sprite.src = "img/Player/up_right_walkB.png";
+		if(time < 20) player.Sprite.src = "img/Player/up_right_walkA.png";
+		if(time > 20 && time < 40) player.Sprite.src = "img/Player/up_right_still.png";
+		if(time > 40) player.Sprite.src = "img/Player/up_right_walkB.png";
 		PlayerSprite = 7;
 	} else if(PlayerSprite == 7) {
 		player.Sprite.src = "img/Player/up_right_still.png";
