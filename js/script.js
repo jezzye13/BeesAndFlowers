@@ -9,8 +9,12 @@ var score = 0;
 var time = 0;
 var timeSec = 0;
 var tileAni = 0;
+var flowerAni = 0; //animation var flower
+var gotFlower = false; //if player got flower
+var playerDown = false; //player is down
+var playerAni = 0; //animation var player
 var gameState = 0; //0 = title screen 1 = game 2 = game over
-var title = "Bee and Flower BETA v1.5" //title
+var title = "Bee and Flower BETA v1.6" //title
 var PlayerSprite = 0; //0 = up, 1 = down 2 = left 3 = right
 var debug = false; //debug mode boolean
 var b; //temp cookie read var
@@ -25,13 +29,18 @@ console.log("Q / E toggle hit boxes");
 
 //entities
 var player = new entity("img/Player/down_still.png", width / 2, 10, 32, 32, 3);
-var flower = new entity("img/entity_flower.png", Math.random() * width - 20, Math.random() * height - 20, 32, 32, 0);
+var player_down = new entity("img/Player/Down/down_1.png", 0, 0, 32, 32, 0);
+var flower = new entity("img/Flower/flower.png", Math.floor(Math.random() * width) - 16, Math.floor(Math.random() * height) - 16, 16, 16, 0);
 
-//hit box image red (entity)
+//hit box image blue (entity)
+var box16 = new Image(); 
+box16.src = "img/Flower/box16_flower.png";
+
+//hit box image red (flower)
 var box32 = new Image(); 
-box32.src = "img/box32.png";
+box32.src = "img/Bee/box32_bee.png";
 
-//hit box image groen (player)
+//hit box image blue (player)
 var box32_player = new Image();
 box32_player.src = "img/Player/box32_player.png";
 
@@ -43,7 +52,7 @@ var bgGameOver = new obj("img/bgGameOver.png",0,0,0,0); //gs 2
 //bee
 var norBees = new Array();
 for (var i = 0; i < 3; i++) {
-	norBees[i] = new entity("img/entity_bee2.png", 0, 0, 32, 32, 1);
+	norBees[i] = new entity("img/Bee/up_right.png", 0, 0, 32, 32, 1);
 }
 
 //events
@@ -92,37 +101,29 @@ function update() {
 	if(keys[81]) debug = true;
 	if(keys[69]) debug = false;
 	
-	if (keys[38] || keys[87]) {
+	if (keys[38] || keys[87] && !playerDown) {
 		var up = true;
 	} else {
 		up = false;
 	}
 	
-	if (keys[40] || keys[83]) {
+	if (keys[40] || keys[83] && !playerDown) {
 		var down = true;
 	} else {
 		down = false;
 	}
 	
-	if (keys[37] || keys[65]) {
+	if (keys[37] || keys[65] && !playerDown) {
 		var left = true;
 	} else {
 		left = false;
 	}
 	
-	if (keys[39] || keys[68]) {
+	if (keys[39] || keys[68] && !playerDown) {
 		var right = true;
 	} else {
 		right = false;
 	}
-
-	//loop
-	//A
-	//Still
-	//B
-	
-	
-	//0-20 = a 20 - 40 = still 40 - 60 = b
 	
 	//player input control
 	if (up && !(left || right)) { //up
@@ -203,9 +204,7 @@ function update() {
 		player.Sprite.src = "img/Player/up_right_still.png";
 	}
 
-
 	//bee 0 movemend
-
 	norBees[0].y = height / 2;
 	if (norBees[0].x >= width) {
 		norBees[0].x = 0;
@@ -213,15 +212,16 @@ function update() {
 		norBees[0].x+=norBees[0].speed;
 	}
 
-
-
-	if (time < 30) norBees[0].y+=norBees[0].height;
-	if (time > 30) norBees[0].y-=norBees[0].height;
-
-	
+	if (time < 30) { 
+		norBees[0].y+=norBees[0].height;
+		norBees[0].Sprite.src = "img/Bee/down_right.png";
+	}
+	if (time > 30) {
+		norBees[0].y-=norBees[0].height;
+		norBees[0].Sprite.src = "img/Bee/up_right.png";
+	}
 
 	//bee 1 movemend
-
 	norBees[1].y = (height / 2) - 75;
 	norBees[1].speed = 2;
 	if (norBees[1].x >= width) {
@@ -230,10 +230,14 @@ function update() {
 		norBees[1].x+=norBees[1].speed;
 	}
 
-
-
-	if (time < 30) norBees[1].y+=norBees[1].height;
-	if (time > 30) norBees[1].y-=norBees[1].height;
+	if (time < 30) { 
+		norBees[1].y+=norBees[1].height;
+		norBees[1].Sprite.src = "img/Bee/up_right.png";
+	}
+	if (time > 30) {
+		norBees[1].y-=norBees[1].height;
+		norBees[1].Sprite.src = "img/Bee/down_right.png";
+	}
 
 	//bee 2 movemend
 	norBees[2].y = (height / 2) + 75;
@@ -244,11 +248,14 @@ function update() {
 		norBees[2].x+=norBees[2].speed;
 	}
 
-
-
-	if (time < 30) norBees[2].y+=norBees[2].height;
-	if (time > 30) norBees[2].y-=norBees[2].height;
-
+	if (time < 30) { 
+		norBees[2].y+=norBees[2].height;
+		norBees[2].Sprite.src = "img/Bee/up_right.png";
+	}
+	if (time > 30) {
+		norBees[2].y-=norBees[2].height;
+		norBees[2].Sprite.src = "img/Bee/down_right.png";
+	}
 
 	//player bonds
 	if (player.x < 0) player.x = 0;
@@ -256,7 +263,66 @@ function update() {
 	if (player.x >= width - player.width) player.x = width - player.width;
 	if (player.y >= height - player.height) player.y = height - player.height;
 
-
+	//flower animation
+	if(!gotFlower) {
+		flower.Sprite.src = "img/Flower/flower.png";
+	}
+	if(flowerAni == 0 && gotFlower && time < 15) {
+		flower.Sprite.src = "img/Flower/flower_1.png";
+		flowerAni++;
+	}
+	if(flowerAni == 1 && gotFlower && time < 30 && time > 15) {
+		flower.Sprite.src = "img/Flower/flower_2.png";
+		flowerAni++;
+	}
+	if(flowerAni == 2 && gotFlower && time < 45 && time > 30) {
+		flower.Sprite.src = "img/Flower/flower_3.png";
+		flowerAni++;
+	}
+	if(flowerAni == 3 && gotFlower && time < 60 && time > 45) {
+		flower.Sprite.src = "img/Flower/flower_4.png";
+		flower.x = Math.floor(Math.random() * width) - 16;
+		flower.y = Math.floor(Math.random() * height) - 16;
+		gotFlower = false;
+		flowerAni = 0;
+	}
+	
+	//player down
+	if(playerAni == 0 && playerDown && time < 15) {
+		player_down.Sprite.src = "img/Player/Down/down_1.png";
+		playerAni++;
+	}
+	if(playerAni == 1 && playerDown && time < 30 && time > 15) {
+		player_down.Sprite.src = "img/Player/Down/down_2.png";
+		playerAni++;
+	}
+	if(playerAni == 2 && playerDown && time < 45 && time > 30) {
+		player_down.Sprite.src = "img/Player/Down/down_3.png";
+		playerAni++;
+	}
+	if(playerAni == 3 && playerDown && time < 60 && time > 45) {
+		player_down.Sprite.src = "img/Player/Down/down_4.png";
+		playerAni++;
+	}
+	if(playerAni == 4 && playerDown && time < 15) {
+		player_down.Sprite.src = "img/Player/Down/down_5.png";
+		playerAni++;
+	}
+	if(playerAni == 5 && playerDown && time < 30 && time > 15) {
+		player_down.Sprite.src = "img/Player/Down/down_6.png";
+		playerAni++;
+	}
+	if(playerAni == 6 && playerDown && time < 45 && time > 30) {
+		player_down.Sprite.src = "img/Player/Down/down_7.png";
+		playerAni++;
+	}
+	if(playerAni == 7 && playerDown && time < 60 && time > 45) {
+		player_down.Sprite.src = "img/Player/Down/down_8.png";
+		playerAni = 0;
+		playerDown = false;
+		if (gameState == 1) gameState = 2;
+		player_down.Sprite.src = "img/Player/Down/down_1.png";
+	}
 
 	//check collisions
 	if (collision(player, flower)) process();
@@ -265,8 +331,6 @@ function update() {
 	}
 
 }
-
-
 
 function render() {
 
@@ -284,14 +348,18 @@ function render() {
 	
 		if(debug) {
 			context.drawImage(box32_player, player.x, player.y);
-			context.drawImage(box32, flower.x, flower.y);
+			context.drawImage(box16, flower.x, flower.y);
 		}
 	
 	//draw player
-	context.drawImage(player.Sprite, player.x, player.y);
+	if(!playerDown) {
+		context.drawImage(player.Sprite, player.x, player.y);
+	} else {
+		context.drawImage(player_down.Sprite, player.x, player.y);
+	}
 
 	//draw frower
-	context.drawImage(flower.Sprite, flower.x, flower.y);
+	context.drawImage(flower.Sprite, flower.x-8, flower.y-8); //-8 cut image is 32x and hit box is 16x
 
 	//draw bee
 	for (var i = 0; i < norBees.length; i++) {
@@ -301,8 +369,8 @@ function render() {
 
 	//draw text
 	context.fillStyle = "black";
-	context.font = "bold 12px helvetica";
-	context.fillText("Score " + score + " Time " + timeSec + "." + time, 10, 35);
+	context.font = "bold 12px courier";
+	context.fillText("Score " + score + " Time " + (60-timeSec) + "." + (60-time), 10, 35);
 	context.font = "bold 10px helvetica";
 	context.fillText(player.x + " X|Y " + player.y, 10, 15);
 
@@ -320,6 +388,8 @@ function render() {
 		} else {
 			str = "Time up!";
 		}
+		
+		playerDown = false; //player down is false
 
 		document.title = title + " - Game Over!";
 		context.fillStyle = "black";
@@ -352,7 +422,6 @@ function render() {
 		centerText(context, "Click on the screen!", height / 2);
 		context.fillStyle = "rgb(0,0,0)";
 		context.fillText("YourTopScore: " + top, 10, height / 12);
-	
 	}
 	
 	var thisFrameFPS = 1000 / ((now=new Date) - lastUpdate);
@@ -373,11 +442,14 @@ function centerText(ctx, text, y) {
 	var x = (ctx.canvas.width - measurement.width) / 2;
 	ctx.fillText(text, x, y);
 }
-//moves the flower
+
+//when player hits flower
 function process() {
-	score++;
-	flower.x = Math.random() * width - 20;
-	flower.y = Math.random() * height - 20;
+	if(!gotFlower) {
+		score++;
+		flower.Sprite.src = "img/Flower/flower_1.png";
+	}
+	gotFlower = true;
 }
 //returns true if first colide with second
 function collision(first, second) {
@@ -388,7 +460,7 @@ function collision(first, second) {
 }
 
 function hit() {
-	if (gameState == 1) gameState = 2;
+    playerDown = true;
 }
 
 //mob`s
