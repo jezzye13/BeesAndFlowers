@@ -483,13 +483,11 @@ function obj(img, x, y, width, height) {
 	this.width = width;
 	this.height = height;
 }
-
+//main loop
 setInterval(function() {
 	game();
-}, 1000/60); //60 fps
-setInterval(function() {
 	render();
-}, 1); //render loop
+}, 1000/30); //60 fps
 setInterval(function() {
 	fpsFix = fps;
 }, 1000); //render loop
