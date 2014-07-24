@@ -10,7 +10,7 @@ $(document).ready(function() {
 //fullscreen function
 function fullScreen() {
     if (BigScreen.enabled) {
-        BigScreen.request(canvas, onEnter, onExit, onError); //var canvas is form js/script.js
+        BigScreen.request(document.getElementById("mainCanvas"), onEnter, onExit, onError); //var canvas is form js/script.js
         // You could also use .toggle(element, onEnter, onExit, onError)
     }
     else {
