@@ -45,3 +45,8 @@ h1:hover {
 #mainCanvas:hover { 
 	box-shadow: 0px 0px 10px 10px #a0a0ff;
 }
+
+@font-face {
+  font-family: 'BAndF';
+  src: url('BAndF.ttf');
+}
